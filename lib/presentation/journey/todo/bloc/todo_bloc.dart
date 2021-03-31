@@ -10,8 +10,31 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   TodoBloc({this.todousecase});
 
   @override
-  Stream<TodoState> mapEventToState(TodoEvent event) async* {}
+  Stream<TodoState> mapEventToState(TodoEvent event) async* {
+    switch(event.runtimeType) {
+      case CreateNewTodo:
+        yield* _createTodo(event);
+        break;
+      case Reload:
+        yield* _reload();
+        break;
+      default:
+        break;
+    }
+  }
 
   @override
   TodoState get initialState => TodoInitial();
+
+  Stream<TodoState> _createTodo(CreateNewTodo event) async* {
+    yield CreatingTodo();
+
+    await todousecase.createTodo(event.todo);
+    
+    yield TodoCreated();
+  }
+
+  Stream<TodoState> _reload() async* {
+    yield TodoInitial();
+  }
 }
